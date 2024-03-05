@@ -1,10 +1,7 @@
-import { LoginPage } from "./LoginPage";
-
 function HomePage() {
   return (
     <div>
-      <h1>Login Page</h1>
-      <LoginPage />
+      <h1>Home Page</h1>
     </div>
   );
 }

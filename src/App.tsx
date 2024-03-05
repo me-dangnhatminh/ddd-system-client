@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import HomePage from "./views/pages/HomePage";
+import { RouterProvider } from "react-router-dom";
+import { rootRouter } from "./views/routes/root";
 
 const queryClient = new QueryClient({
   defaultOptions: {},
@@ -8,7 +9,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <HomePage />
+      <RouterProvider router={rootRouter} />
     </QueryClientProvider>
   );
 }
