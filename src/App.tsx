@@ -1,10 +1,8 @@
-import { QueryClient, QueryClientProvider } from "react-query";
-import HomePage from "./pages/HomePage";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import HomePage from "./views/pages/HomePage";
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { onError: () => {} }, //TODO: add global error handling
-  },
+  defaultOptions: {},
 });
 
 function App() {
