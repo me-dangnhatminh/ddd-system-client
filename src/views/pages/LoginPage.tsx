@@ -1,26 +1,26 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { login } from "../../api/http-rest/auth/auth.api";
 import { Navigate } from "react-router-dom";
+import { ApiResponseError } from "../../api/http-rest/api-response";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errormsg, setErrormsg] = useState<null | string>(null);
 
-  const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: login,
-    onSuccess: () => console.log("Logged in"),
-    onError: (error) => console.error(error.message),
-  });
+  const queryClient = useQueryClient();
+  const { mutate, isPending, isSuccess, isError } = useLogin();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setErrormsg(null);
     event.preventDefault();
     if (isPending) return;
     mutate({ email, password });
   };
 
-  if (isSuccess) return <Navigate to="/home" />;
+  // if (isSuccess) return <Navigate to="/home" />;
 
   return (
     <div>
@@ -40,6 +40,9 @@ function LoginPage() {
         />
         <button type="submit">Login</button>
       </form>
+      {isPending && <p>Loading...</p>}
+      {isSuccess && <p style={{ color: "green" }}>Login successful</p>}
+      {error && <p style={{ color: "red" }}>{error.message}</p>}
     </div>
   );
 }

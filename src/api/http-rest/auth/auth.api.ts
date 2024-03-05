@@ -1,24 +1,40 @@
 import Api from "../api";
-import { isUsersDTO } from "./auth.dtos";
-
-import { API_RESPONSE_FORMAT_ERROR } from "../api-error.constant";
-import { ApiResponseError } from "../api-response.interface";
-
-export async function getUsers() {
-  const res = await Api.get("https://jsonplaceholder.typicode.com/users");
-  if (!isUsersDTO(res.data))
-    throw new ApiResponseError(API_RESPONSE_FORMAT_ERROR);
-  return res.data;
-}
-
-const fakeUser = {
-  email: "fake-user@gmail.com",
-  password: "fake-password",
-};
+import { IUserDTO, validUserDTO, validArrUserDTO } from "./auth.dtos";
 
 export async function login(credentials: { email: string; password: string }) {
-  const { email, password } = credentials;
-  if (email === fakeUser.email && password === fakeUser.password) {
-    return;
-  } else throw new Error("Invalid credentials");
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      credentials;
+      resolve(Math.random() >= 0.5);
+    }, 2000);
+  }).then((res) => {
+    if (!res)
+      throw {
+        type: "invalid-credentials",
+        title: "Invalid Credentials",
+        detail: "The email or password you entered is incorrect.",
+      };
+  });
+}
+
+export async function getMe(): Promise<IUserDTO> {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  const data = {
+    id: 1,
+    name: "fake-user",
+    email: "fake@gmail.com",
+    phone: "123-456-7890",
+  };
+
+  const result = validUserDTO(data);
+  if (!result.success) throw Error("Invalid API response format");
+  return result.data;
+}
+
+export async function getUsers() {
+  return Api.get("https://jsonplaceholder.typicode.com/users").then((res) => {
+    const result = validArrUserDTO(res.data);
+    if (!result.success) throw Error("Invalid API response format");
+    return result.data;
+  });
 }

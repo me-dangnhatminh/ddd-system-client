@@ -1,17 +1,33 @@
-// User DTO
-export interface IUserDTO {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-}
+import { z } from "zod";
 
-export function isUserDTO(data: unknown): data is IUserDTO {
-  if (typeof data !== "object" || data === null) return false;
-  return "id" in data && "name" in data && "email" in data && "phone" in data;
-}
+const UserDTOSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string(),
+  phone: z.string(),
+});
 
-export function isUsersDTO(data: unknown): data is IUserDTO[] {
-  if (!Array.isArray(data)) return false;
-  return data.every(isUserDTO);
-}
+const AuthCredentialsSchema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
+
+const LoginUserDTOSchema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
+
+const RegisterUserDTOSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  password: z.string(),
+  phone: z.string(),
+});
+
+export type IUserDTO = z.infer<typeof UserDTOSchema>;
+export type IAuthCredentials = z.infer<typeof AuthCredentialsSchema>;
+export type ILoginUserDTO = z.infer<typeof LoginUserDTOSchema>;
+export type IRegisterUserDTO = z.infer<typeof RegisterUserDTOSchema>;
+
+export const validUserDTO = UserDTOSchema.safeParse;
+export const validArrUserDTO = z.array(UserDTOSchema).safeParse;
