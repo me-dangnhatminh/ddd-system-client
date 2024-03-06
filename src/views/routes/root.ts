@@ -8,6 +8,10 @@ enum RoutesPath {
 
 const routes: RouteObject[] = [
   {
+    path: "/",
+    Component: lazy(() => import("../pages/HomePage")),
+  },
+  {
     path: RoutesPath.HOME,
     Component: lazy(() => import("../pages/HomePage")),
   },
@@ -15,6 +19,9 @@ const routes: RouteObject[] = [
     path: RoutesPath.LOGIN,
     Component: lazy(() => import("../pages/LoginPage")),
   },
+];
+
+const errorRoutes: RouteObject[] = [
   {
     path: "/404",
     Component: lazy(() => import("../pages/errors/NotFoundPage")),
@@ -29,8 +36,19 @@ const routes: RouteObject[] = [
   },
 ];
 
-function getRoutes() {
-  return routes;
+const privateRoutes: RouteObject[] = [
+  {
+    path: "/admin",
+    Component: lazy(() => import("../pages/AdminPage")),
+  },
+];
+
+function getRoutes(role: "admin" | "user") {
+  const _routes = [...routes];
+  if (role === "admin") _routes.push(...privateRoutes);
+  _routes.push(...errorRoutes);
+
+  return _routes;
 }
 
-export const rootRouter = createBrowserRouter(getRoutes());
+export const rootRouter = createBrowserRouter(getRoutes("admin"));

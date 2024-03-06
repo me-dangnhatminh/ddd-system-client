@@ -9,7 +9,9 @@ function HomePage() {
   return (
     <div>
       <h1>Home Page</h1>
-      <p>Hello, {user.email}</p>
+      <p>
+        Welcome, <span style={{ fontWeight: "bold" }}>{user?.name}</span>
+      </p>
     </div>
   );
 }
