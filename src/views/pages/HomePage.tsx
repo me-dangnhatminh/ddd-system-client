@@ -1,14 +1,15 @@
-import { useUser } from "../../contexts/auth/use-user";
+import { useMe } from "../../contexts/auth/hook"; // react query
 
 function HomePage() {
-  const { data: user, isPending } = useUser();
+  const { data: user, isPending, error, isError } = useMe();
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) return <p>Loading...</p>;
+  if (isError) throw error;
 
   return (
     <div>
       <h1>Home Page</h1>
-      <p>Welcome {user?.name}</p>
+      <p>Hello, {user.email}</p>
     </div>
   );
 }

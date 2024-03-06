@@ -1,15 +1,27 @@
-import { getMe } from "../../api/http-rest/auth/auth.api";
-import { User } from "./user";
+import { getMe, login } from "../../api/http-rest/auth";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-interface IErrorDetail {
-  type: string;
-  title: string;
-  detail: string;
+export enum AuthQueryKeys {
+  USER = "user",
 }
 
-export function useUser() {
-  return useQuery<User, IErrorDetail>({
+export function useLogin() {
+  return useMutation({
+    mutationFn: login,
+    onSuccess: (data) => localStorage.setItem("access_token", data.accessToken),
+    throwOnError: true,
+  });
+}
+
+export function useMe() {
+  return useQuery({
     queryKey: [AuthQueryKeys.USER],
     queryFn: getMe,
+  });
+}
+
+export function useRegister() {
+  return useMutation({
+    mutationFn: () => Promise.resolve(),
   });
 }

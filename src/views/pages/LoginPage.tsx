@@ -1,26 +1,17 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { login } from "../../api/http-rest/auth/auth.api";
-import { Navigate } from "react-router-dom";
-import { ApiResponseError } from "../../api/http-rest/api-response";
+import { useLogin } from "../../contexts/auth/hook";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errormsg, setErrormsg] = useState<null | string>(null);
 
-  const queryClient = useQueryClient();
-  const { mutate, isPending, isSuccess, isError } = useLogin();
+  const { mutate, isPending, error } = useLogin();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    setErrormsg(null);
     event.preventDefault();
     if (isPending) return;
     mutate({ email, password });
   };
-
-  // if (isSuccess) return <Navigate to="/home" />;
 
   return (
     <div>
@@ -41,7 +32,6 @@ function LoginPage() {
         <button type="submit">Login</button>
       </form>
       {isPending && <p>Loading...</p>}
-      {isSuccess && <p style={{ color: "green" }}>Login successful</p>}
       {error && <p style={{ color: "red" }}>{error.message}</p>}
     </div>
   );

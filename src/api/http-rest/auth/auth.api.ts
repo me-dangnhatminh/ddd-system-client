@@ -2,25 +2,19 @@ import Api from "../api";
 import { IUserDTO, validUserDTO, validArrUserDTO } from "./auth.dtos";
 
 export async function login(credentials: { email: string; password: string }) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      credentials;
-      resolve(Math.random() >= 0.5);
-    }, 2000);
-  }).then((res) => {
-    if (!res)
-      throw {
-        type: "invalid-credentials",
-        title: "Invalid Credentials",
-        detail: "The email or password you entered is incorrect.",
-      };
+  return Api.post(
+    "https://jsonplaceholder.typicode.com/users",
+    credentials
+  ).then((res) => {
+    const token: string = res.headers["x-auth-token"];
+    if (!token && typeof token !== "string")
+      throw Error("Invalid API response format");
+    else return { accessToken: token };
   });
 }
 
 export async function getMe(): Promise<IUserDTO> {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
   const data = {
-    id: 1,
     name: "fake-user",
     email: "fake@gmail.com",
     phone: "123-456-7890",

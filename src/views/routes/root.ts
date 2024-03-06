@@ -16,8 +16,16 @@ const routes: RouteObject[] = [
     Component: lazy(() => import("../pages/LoginPage")),
   },
   {
+    path: "/404",
+    Component: lazy(() => import("../pages/errors/NotFoundPage")),
+  },
+  {
+    path: "/500",
+    Component: lazy(() => import("../pages/errors/ServerErrorPage")),
+  },
+  {
     path: "*",
-    Component: lazy(() => import("../pages/NotFoundPage")),
+    Component: lazy(() => import("../pages/errors/NotFoundPage")),
   },
 ];
 
