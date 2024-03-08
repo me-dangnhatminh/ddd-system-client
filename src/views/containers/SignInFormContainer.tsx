@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useSignIn } from "../../contexts/auth/auth.hook";
 import { validAuthCredentials } from "../../api/http-rest/auth";
 import SignInForm, { SignInCredentials } from "../components/SignInForm";
-import { Container } from "@mui/joy";
 import SignInThirtySeviceContainer from "./SignInThirtySeviceContainer";
 
 //TODO: Move to utils
@@ -34,11 +33,15 @@ function SignInFormContainer() {
   }
 
   useEffect(() => {
+    if (signIn.isPending) setError(undefined);
+  }, [signIn.isPending]);
+
+  useEffect(() => {
     if (signIn.error) setError({ responseError: signIn.error.message });
   }, [signIn.error]);
 
   return (
-    <Container maxWidth="xs">
+    <>
       <SignInForm
         error={error}
         isSumitting={signIn.isPending}
@@ -46,7 +49,7 @@ function SignInFormContainer() {
         onFocus={handleInputFocus}
       />
       <SignInThirtySeviceContainer isSumitting={signIn.isPending} />
-    </Container>
+    </>
   );
 }
 export default SignInFormContainer;

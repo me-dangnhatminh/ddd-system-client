@@ -33,7 +33,7 @@ function SignInThirtySeviceContainer({
   }
 
   return (
-    <Stack direction="row" spacing={4} pt={1} justifyContent="center">
+    <Stack direction="row" spacing={4} py={1} justifyContent="center">
       <IconButton
         disabled={isSumitting}
         variant="plain"

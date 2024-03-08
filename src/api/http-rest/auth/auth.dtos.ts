@@ -2,29 +2,30 @@ import { z } from "zod";
 
 export const UserDTOSchema = z.object({
   id: z.number(),
-  name: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
   email: z.string(),
-  phone: z.string(),
+  avaterUrl: z.string(),
+});
+
+export const SignUpDTOSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Emai must be include @. ex: demo@email.com "),
+  password: z.string(),
 });
 
 export const AuthCredentialsSchema = z.object({
   email: z
     .string()
     .min(1, "Email is required")
-    .email("This is not a valid email"),
+    .email("Emai must be include @. ex: demo@email.com "),
   password: z.string().min(1, "Password is required"),
 });
 
-export const RegisterUserDTOSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  password: z.string(),
-  phone: z.string(),
-});
-
 export type IUserDTO = z.infer<typeof UserDTOSchema>;
+export type ISignUpDTO = z.infer<typeof SignUpDTOSchema>;
 export type IAuthCredentials = z.infer<typeof AuthCredentialsSchema>;
-export type IRegisterUserDTO = z.infer<typeof RegisterUserDTOSchema>;
 
 export const validUserDTO = UserDTOSchema.safeParse;
 export const validArrUserDTO = z.array(UserDTOSchema).safeParse;

@@ -1,10 +1,24 @@
-import { Container } from "@mui/joy";
+import { Box, Container, Stack, Typography } from "@mui/joy";
 import SignInFormContainer from "../containers/SignInFormContainer";
+
+function Footer() {
+  return (
+    <Box>
+      <Typography level="body-xs" textAlign="center">
+        Minh is protected by reCAPTCHA and the Google Privacy Policy and Terms
+        of Service apply.
+      </Typography>
+    </Box>
+  );
+}
 
 function SignInPage() {
   return (
-    <Container>
-      <SignInFormContainer />
+    <Container maxWidth="xs">
+      <Stack spacing={2} py={4}>
+        <Box children={<SignInFormContainer />} />
+        <Box children={<Footer />} />
+      </Stack>
     </Container>
   );
 }
