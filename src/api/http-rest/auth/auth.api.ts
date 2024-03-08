@@ -1,5 +1,30 @@
 import Api from "../api";
-import { IUserDTO, validUserDTO, validArrUserDTO } from "./auth.dtos";
+import {
+  IUserDTO,
+  validUserDTO,
+  validArrUserDTO,
+  IAuthCredentials,
+} from "./auth.dtos";
+
+const user = {
+  id: 1,
+  name: "fake-user",
+  email: "fake-user@gamil.com",
+  Password: "fake-password",
+};
+
+export async function signIn(
+  cres: IAuthCredentials
+): Promise<{ accessToken: string }> {
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (cres.email !== user.email || cres.password !== user.Password)
+        return reject(new Error("Invalid credentials. Please try again."));
+      resolve(null);
+    }, 1000);
+  });
+  return { accessToken: "fake-token" };
+}
 
 export async function login(credentials: { email: string; password: string }) {
   return Api.post(

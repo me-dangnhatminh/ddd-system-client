@@ -3,7 +3,7 @@ import { RouteObject, createBrowserRouter } from "react-router-dom";
 
 enum RoutesPath {
   HOME = "/",
-  LOGIN = "/login",
+  SIGN_IN = "/signin",
 }
 
 const routes: RouteObject[] = [
@@ -12,8 +12,8 @@ const routes: RouteObject[] = [
     Component: lazy(() => import("../pages/HomePage")),
   },
   {
-    path: RoutesPath.LOGIN,
-    Component: lazy(() => import("../pages/LoginPage")),
+    path: RoutesPath.SIGN_IN,
+    Component: lazy(() => import("../pages/SignInPage")),
   },
 ];
 

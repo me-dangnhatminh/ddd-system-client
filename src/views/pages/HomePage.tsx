@@ -1,4 +1,5 @@
-import { useMe } from "../../contexts/auth/hook"; // react query
+import { useMe } from "../../contexts/auth/auth.hook"; // react query
+import DefaultLayout from "../layouts/DefaultLayout";
 
 function HomePage() {
   const { data: user, isPending, error, isError } = useMe();
@@ -7,12 +8,9 @@ function HomePage() {
   if (isError) throw error;
 
   return (
-    <div>
-      <h1>Home Page</h1>
-      <p>
-        Welcome, <span style={{ fontWeight: "bold" }}>{user?.name}</span>
-      </p>
-    </div>
+    <DefaultLayout>
+      <h1>Welcome {user?.name}</h1>
+    </DefaultLayout>
   );
 }
 export default HomePage;

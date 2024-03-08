@@ -1,4 +1,4 @@
-import { useListUsers } from "../../contexts/auth/hook";
+import { useListUsers } from "../../contexts/auth/auth.hook";
 import Loading from "../components/Loading";
 
 function AdminPage() {

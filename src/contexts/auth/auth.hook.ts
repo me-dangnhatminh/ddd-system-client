@@ -1,8 +1,12 @@
-import { getMe, getUsers, login } from "../../api/http-rest/auth";
+import { getMe, getUsers, login, signIn } from "../../api/http-rest/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export enum AuthQueryKeys {
   USER = "user",
+}
+
+export function useSignIn() {
+  return useMutation({ mutationFn: signIn });
 }
 
 export function useLogin() {
