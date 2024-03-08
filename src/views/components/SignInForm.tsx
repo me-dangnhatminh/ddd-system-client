@@ -109,7 +109,7 @@ function SignInForm({
           <Grid xs={12}>
             <Box display="flex" justifyContent="space-between">
               <Link href={forgPassUrl}>
-                <Typography>Forgot Password?</Typography>
+                <Typography level="body-sm">Forgot Password?</Typography>
               </Link>
             </Box>
           </Grid>
