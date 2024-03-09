@@ -1,4 +1,4 @@
-import { getMe, getUsers, login, signIn } from "../../api/http-rest/auth";
+import { getMe, signIn, signUp } from "../../api/http-rest/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export enum AuthQueryKeys {
@@ -9,14 +9,6 @@ export function useSignIn() {
   return useMutation({ mutationFn: signIn });
 }
 
-export function useLogin() {
-  return useMutation({
-    mutationFn: login,
-    onSuccess: (data) => localStorage.setItem("access_token", data.accessToken),
-    throwOnError: true,
-  });
-}
-
 export function useMe() {
   return useQuery({
     queryKey: [AuthQueryKeys.USER],
@@ -25,17 +17,9 @@ export function useMe() {
   });
 }
 
-export function useRegister() {
+export function useSignUp() {
   return useMutation({
-    mutationFn: () => Promise.resolve(),
-    throwOnError: true,
-  });
-}
-
-export function useListUsers() {
-  return useQuery({
-    queryKey: ["users"],
-    queryFn: getUsers,
+    mutationFn: signUp,
     throwOnError: true,
   });
 }

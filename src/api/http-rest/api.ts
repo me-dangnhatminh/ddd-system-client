@@ -5,7 +5,7 @@ import axios, {
 } from "axios";
 
 const REQUEST_TIMEOUT_MS = 30000;
-const API_BASE_URL = ""; //TODO: Add API base URL
+const API_BASE_URL = "http://localhost:3000"; //TODO: Add API base URL
 
 const apiRequestConfig: CreateAxiosDefaults<unknown> = {
   baseURL: `${API_BASE_URL}`,
