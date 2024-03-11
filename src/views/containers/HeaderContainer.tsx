@@ -10,11 +10,7 @@ function HeaderContainer() {
   return (
     <Header
       isLoggedIn={isSuccess}
-      userInfo={{
-        firstName: user.name,
-        lastName: user.name,
-        avatarUrl: "fake",
-      }}
+      userInfo={user}
       isShowMenu={false}
       onBtnLoginClick={(e) => {
         e.preventDefault();

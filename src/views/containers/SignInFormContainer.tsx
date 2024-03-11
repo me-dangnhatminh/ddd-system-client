@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
+
 import { useSignIn } from "../../contexts/auth/auth.hook";
 import { validAuthCredentials } from "../../api/http-rest/auth";
 import SignInForm, { SignInCredentials } from "../components/SignInForm";
@@ -36,13 +38,11 @@ function SignInFormContainer() {
     if (signIn.isPending) setError(undefined);
   }, [signIn.isPending]);
 
-  useEffect(() => {
-    if (signIn.error) setError({ responseError: signIn.error.message });
-  }, [signIn.error]);
-
+  if (signIn.isSuccess) return <Navigate to="/" />;
   return (
     <>
       <SignInForm
+        signUpUrl="signup"
         error={error}
         isSumitting={signIn.isPending}
         onSubmit={handleSubmit}

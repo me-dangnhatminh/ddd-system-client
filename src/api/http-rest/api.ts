@@ -3,6 +3,7 @@ import axios, {
   type AxiosRequestConfig,
   type CreateAxiosDefaults,
 } from "axios";
+import { apiResponseInterceptor } from "./api-interceptor";
 
 const REQUEST_TIMEOUT_MS = 30000;
 const API_BASE_URL = "http://localhost:3000"; //TODO: Add API base URL
@@ -16,6 +17,8 @@ const apiRequestConfig: CreateAxiosDefaults<unknown> = {
 };
 
 export const axiosInstance: AxiosInstance = axios.create(apiRequestConfig);
+
+axiosInstance.interceptors.response.use(apiResponseInterceptor);
 
 class Api {
   static get<T>(

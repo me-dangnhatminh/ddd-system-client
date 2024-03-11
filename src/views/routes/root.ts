@@ -15,6 +15,10 @@ const routes: RouteObject[] = [
     path: RoutesPath.SIGN_IN,
     Component: lazy(() => import("../pages/SignInPage")),
   },
+  {
+    path: "/signup",
+    Component: lazy(() => import("../pages/SignUpPage")),
+  },
 ];
 
 const errorRoutes: RouteObject[] = [
