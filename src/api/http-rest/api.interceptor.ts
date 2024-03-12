@@ -1,5 +1,5 @@
 import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { isErrorDetail } from "./api-error.dto";
+import { ApiError, isErrorDetail } from "./api.dto";
 
 const API_KEY_STORE_ACCESS_TOKEN = "access_token";
 const API_ACCESS_TOKEN_HEADER = "x-access-token";
@@ -19,7 +19,7 @@ export const apiResponseInterceptor = (
   if (contentType?.includes(PROBLEM_DETAILS_CONTENT_TYPE)) {
     const error = response.data;
     if (!isErrorDetail(error)) throw new Error("Invalid error response format");
-    throw error;
+    throw ApiError.fromError(error);
   }
 
   return response;

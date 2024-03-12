@@ -2,19 +2,10 @@ import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
 import { useSignIn } from "../../contexts/auth/auth.hook";
-import { validAuthCredentials } from "../../api/http-rest/auth";
 import SignInForm, { SignInCredentials } from "../components/SignInForm";
 import SignInThirtySeviceContainer from "./SignInThirtySeviceContainer";
-
-//TODO: Move to utils
-function getCredentialsError(credentials: { email: string; password: string }) {
-  const valid = validAuthCredentials(credentials);
-  if (valid.success) return undefined;
-  const errors = valid.error.errors;
-  const emailMess = errors.find((err) => err.path[0] === "email")?.message;
-  const passMess = errors.find((err) => err.path[0] === "password")?.message;
-  return { email: emailMess, password: passMess };
-}
+import { isValidationError } from "../../api/http-rest/api.dto";
+import { invalidParamsToCredentials } from "../../api/http-rest/auth";
 
 function SignInFormContainer() {
   const signIn = useSignIn();
@@ -29,14 +20,20 @@ function SignInFormContainer() {
 
   function handleSubmit(cres: SignInCredentials) {
     if (signIn.isPending) return;
-    const error = getCredentialsError(cres);
-    if (error) return setError({ invalidParams: error });
     signIn.mutate(cres);
   }
 
   useEffect(() => {
     if (signIn.isPending) setError(undefined);
   }, [signIn.isPending]);
+
+  useEffect(() => {
+    if (!signIn.isError) return;
+    const error = signIn.error;
+    if (isValidationError(error))
+      setError({ invalidParams: invalidParamsToCredentials(error) });
+    else setError({ responseError: error.detail });
+  }, [signIn.error, signIn.isError]);
 
   if (signIn.isSuccess) return <Navigate to="/" />;
   return (
@@ -52,4 +49,5 @@ function SignInFormContainer() {
     </>
   );
 }
+
 export default SignInFormContainer;

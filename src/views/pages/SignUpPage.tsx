@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Container } from "@mui/joy";
 import { useSignUp } from "../../contexts/auth/auth.hook";
-import { isValidationError } from "../../api/http-rest/api-error.dto";
+import { isValidationError } from "../../api/http-rest/api.dto";
 
 function SignUpPage() {
   const [invalid, setInvalid] = useState<Map<string, string>>(new Map());

@@ -4,7 +4,7 @@ import {
   validUserDTO,
   IAuthCredentials,
   ISignUpDTO,
-} from "./auth.dtos";
+} from "./auth.dto";
 
 const AT_HEADER_RES_KEY = "x-access-token";
 const AT_TOKEN_STORAGE_KEY = "access_token";
