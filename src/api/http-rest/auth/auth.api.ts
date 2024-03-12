@@ -6,15 +6,12 @@ import {
   ISignUpDTO,
 } from "./auth.dto";
 
-const AT_HEADER_RES_KEY = "x-access-token";
-const AT_TOKEN_STORAGE_KEY = "access_token";
-
 export function signIn(cres: IAuthCredentials): Promise<void> {
   return Api.post("auth/signin", cres).then((res) => {
-    const token = res.headers[AT_HEADER_RES_KEY];
+    const token = res.headers["x-access-token"];
     if (!token || typeof token !== "string")
       throw Error("No access token received from server");
-    localStorage.setItem(AT_TOKEN_STORAGE_KEY, token);
+    localStorage.setItem("access_token", token);
   });
 }
 
@@ -24,8 +21,12 @@ export function signUp(dto: ISignUpDTO): Promise<void> {
 
 export function getMe(): Promise<IUserDTO> {
   return Api.get("users/me").then((res) => {
-    const result = validUserDTO(res.data);
-    if (!result.success) throw Error("Invalid user data received from server");
+    // TODO: fix
+    const result = validUserDTO({
+      ...(res.data as IUserDTO),
+      avatarUrl: "hello",
+    });
+    if (!result.success) throw result.error;
     return result.data;
   });
 }

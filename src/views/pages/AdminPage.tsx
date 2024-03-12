@@ -1,5 +1,5 @@
 import { useListUsers } from "../../contexts/auth/auth.hook";
-import Loading from "../components/Loading";
+import Loading from "../components/FullLoading";
 
 function AdminPage() {
   const getListUser = useListUsers();

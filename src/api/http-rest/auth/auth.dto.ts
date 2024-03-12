@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const UserDTOSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),

@@ -3,7 +3,10 @@ import axios, {
   type AxiosRequestConfig,
   type CreateAxiosDefaults,
 } from "axios";
-import { apiResponseInterceptor } from "./api.interceptor";
+import {
+  apiRequestInterceptor,
+  apiResponseInterceptor,
+} from "./api.interceptor";
 
 const REQUEST_TIMEOUT_MS = 30000;
 const API_BASE_URL = "http://localhost:3000"; //TODO: Move to env
@@ -13,11 +16,11 @@ const apiRequestConfig: CreateAxiosDefaults<unknown> = {
   timeout: REQUEST_TIMEOUT_MS,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
-  // TODO: Add http agent
 };
 
 export const axiosInstance: AxiosInstance = axios.create(apiRequestConfig);
 
+axiosInstance.interceptors.request.use(apiRequestInterceptor);
 axiosInstance.interceptors.response.use(apiResponseInterceptor);
 
 class Api {

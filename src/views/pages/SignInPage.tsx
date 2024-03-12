@@ -5,8 +5,8 @@ function Footer() {
   return (
     <Box>
       <Typography level="body-xs" textAlign="center">
-        Minh is protected by reCAPTCHA and the Google Privacy Policy and Terms
-        of Service apply.
+        Task Cafe is protected by reCAPTCHA and the Privacy Policy and Terms of
+        Service apply.
       </Typography>
     </Box>
   );

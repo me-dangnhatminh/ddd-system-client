@@ -1,20 +1,21 @@
 import React from "react";
-import { AppBar, Toolbar } from "@mui/material";
 import {
-  Container,
   Box,
   Avatar,
   IconButton,
   Button,
   Typography,
-  Tooltip,
+  MenuItem,
+  Menu,
+  Dropdown,
+  MenuButton,
 } from "@mui/joy";
-import MenuIcon from "@mui/icons-material/Menu";
 import GroupsIcon from "@mui/icons-material/Groups";
 
 type UserProps = {
   firstName: string;
   lastName: string;
+  email: string;
   avatarUrl: string;
 };
 
@@ -22,54 +23,81 @@ type HeaderProps = {
   isLoggedIn: boolean;
   userInfo?: UserProps;
   isShowMenu: boolean;
-  onBtnLoginClick: React.MouseEventHandler<HTMLAnchorElement>;
+  onBtnSignInClick: React.MouseEventHandler<HTMLAnchorElement>;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-function Header({ isLoggedIn, userInfo, onBtnLoginClick }: HeaderProps) {
+function Header({ isLoggedIn, userInfo, onBtnSignInClick }: HeaderProps) {
   return (
-    <AppBar position="static" color="default" elevation={0}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton>
-              <MenuIcon />
-            </IconButton>
-          </Box>
-          <GroupsIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="soft"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            GDSC MEET
-          </Typography>
-          <Box sx={{ flexGrow: 0 }}>
-            {(isLoggedIn && userInfo && (
-              <Tooltip title="Open settings">
-                <IconButton sx={{ p: 0 }}>
-                  <Avatar alt={userInfo.firstName} src={userInfo.avatarUrl} />
-                </IconButton>
-              </Tooltip>
-            )) || (
-              <Button variant="outlined" onClick={onBtnLoginClick}>
-                Login
-              </Button>
-            )}
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+    <Box
+      mx="auto"
+      maxWidth="lg"
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        top: 0,
+        px: 1.5,
+        py: 1,
+        borderBottom: "1px solid",
+        borderColor: "divider",
+        position: "sticky",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 1.5,
+        }}
+      >
+        <IconButton size="sm" variant="soft">
+          <GroupsIcon />
+        </IconButton>
+        <Typography component="h1" fontWeight="xl">
+          TASK CAFE
+        </Typography>
+      </Box>
+
+      <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
+        {!isLoggedIn ? (
+          <Button variant="outlined" onClick={onBtnSignInClick}>
+            Sign In
+          </Button>
+        ) : (
+          <Dropdown>
+            <MenuButton
+              slots={{ root: IconButton }}
+              slotProps={{ root: { variant: "plain", color: "neutral" } }}
+              sx={{
+                borderRadius: 40,
+                gap: 1,
+                display: { xs: "none", sm: "flex" },
+                alignItems: "center",
+              }}
+            >
+              <Avatar
+                variant="outlined"
+                size="sm"
+                src={userInfo?.avatarUrl ?? ""}
+              />
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography level="title-sm">
+                  {`${userInfo?.firstName} ${userInfo?.lastName}`.trim()}
+                </Typography>
+                <Typography level="body-xs">{userInfo?.email}</Typography>
+              </Box>
+            </MenuButton>
+            <Menu>
+              <MenuItem>Profile</MenuItem>
+              <MenuItem>Logout</MenuItem>
+            </Menu>
+          </Dropdown>
+        )}
+      </Box>
+    </Box>
   );
 }
 

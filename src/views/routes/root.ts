@@ -4,6 +4,7 @@ import { RouteObject, createBrowserRouter } from "react-router-dom";
 enum RoutesPath {
   HOME = "/",
   SIGN_IN = "/signin",
+  SIGN_UP = "/signup",
 }
 
 const routes: RouteObject[] = [
@@ -16,7 +17,7 @@ const routes: RouteObject[] = [
     Component: lazy(() => import("../pages/SignInPage")),
   },
   {
-    path: "/signup",
+    path: RoutesPath.SIGN_UP,
     Component: lazy(() => import("../pages/SignUpPage")),
   },
 ];

@@ -1,4 +1,4 @@
-import { ApiError, IErrorDetail } from "../../api/http-rest/api.dto";
+import { IErrorDetail } from "../../api/http-rest/api.dto";
 import {
   IAuthCredentials,
   ISignUpDTO,
@@ -14,7 +14,7 @@ export enum AuthQueryKeys {
 }
 
 export function useSignIn() {
-  return useMutation<void, ApiError, IAuthCredentials>({
+  return useMutation<void, IErrorDetail, IAuthCredentials>({
     mutationFn: signIn,
   });
 }
@@ -32,7 +32,6 @@ export function useMe() {
   return useQuery<IUserDTO, IErrorDetail, IUserDTO>({
     queryKey: [AuthQueryKeys.USER],
     queryFn: getMe,
-    throwOnError: true,
   });
 }
 
