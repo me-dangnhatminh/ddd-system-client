@@ -5,6 +5,7 @@ enum RoutesPath {
   HOME = "/",
   SIGN_IN = "/signin",
   SIGN_UP = "/signup",
+  PROFILE = "/profile",
 }
 
 const routes: RouteObject[] = [
@@ -19,6 +20,10 @@ const routes: RouteObject[] = [
   {
     path: RoutesPath.SIGN_UP,
     Component: lazy(() => import("../pages/SignUpPage")),
+  },
+  {
+    path: RoutesPath.PROFILE,
+    Component: lazy(() => import("../pages/ProfilePage")),
   },
 ];
 

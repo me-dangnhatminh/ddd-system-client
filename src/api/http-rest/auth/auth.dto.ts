@@ -23,9 +23,16 @@ export const AuthCredentialsSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+export const UpdateProfileDTOSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  rawAvatar: z.instanceof(File).optional(),
+});
+
 export type IUserDTO = z.infer<typeof UserDTOSchema>;
 export type ISignUpDTO = z.infer<typeof SignUpDTOSchema>;
 export type IAuthCredentials = z.infer<typeof AuthCredentialsSchema>;
+export type IUpdateProfileDTO = z.infer<typeof UpdateProfileDTOSchema>;
 
 export const validUserDTO = UserDTOSchema.safeParse;
 export const validArrUserDTO = z.array(UserDTOSchema).safeParse;

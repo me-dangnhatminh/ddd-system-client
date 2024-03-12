@@ -2,10 +2,12 @@ import { IErrorDetail } from "../../api/http-rest/api.dto";
 import {
   IAuthCredentials,
   ISignUpDTO,
+  IUpdateProfileDTO,
   IUserDTO,
   getMe,
   signIn,
   signUp,
+  updateProfile,
 } from "../../api/http-rest/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -29,9 +31,16 @@ export function useSignOut() {
 }
 
 export function useMe() {
+  // get user cache
   return useQuery<IUserDTO, IErrorDetail, IUserDTO>({
     queryKey: [AuthQueryKeys.USER],
     queryFn: getMe,
+  });
+}
+
+export function useUpdateProfile() {
+  return useMutation<void, IErrorDetail, IUpdateProfileDTO>({
+    mutationFn: updateProfile,
   });
 }
 
