@@ -1,60 +1,55 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Container } from "@mui/joy";
-import { useSignUp } from "../../contexts/auth/auth.hook";
-import { isValidationError } from "../../api/http-rest/api.dto";
+import { useEmailValidityChecks } from "../../contexts/auth/auth.hook";
+import { debounce } from "lodash";
 
 function SignUpPage() {
-  const [invalid, setInvalid] = useState<Map<string, string>>(new Map());
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const {
+    mutate: emailMutate,
+    error: emailError,
+    isSuccess: emailValid,
+  } = useEmailValidityChecks();
+
+  const checkEmail = useMemo(
+    () => debounce((email: string) => emailMutate(email), 700),
+    [emailMutate]
+  );
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const signUp = useSignUp();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    signUp.mutate({ firstName, lastName, email, password });
   };
 
-  useEffect(() => {
-    if (!signUp.isError) return;
-    const error = signUp.error;
-    if (isValidationError(error)) {
-      setInvalid(new Map(error.invalidParams.map((e) => [e.name, e.reason])));
-    }
-  }, [signUp.isError, signUp.error]);
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    checkEmail(e.target.value);
+  };
 
   return (
     <Container maxWidth="xs">
       <form onSubmit={handleSubmit}>
         <input
-          type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First Name"
-        />
-        <p>{invalid.get("firstName")}</p>
-        <input
-          type="text"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder="Last Name"
-        />
-        <p>{invalid.get("lastName")}</p>
-        <input
+          style={{
+            backgroundColor: emailValid
+              ? "lightgreen"
+              : emailError
+              ? "red"
+              : "white",
+          }}
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
           placeholder="Email"
         />
-        <p>{invalid.get("email")}</p>
+        <p>{emailError?.message}</p>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <p>{invalid.get("password")}</p>
         <button type="submit">Sign Up</button>
       </form>
     </Container>

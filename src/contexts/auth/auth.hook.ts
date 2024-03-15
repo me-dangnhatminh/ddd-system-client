@@ -2,17 +2,16 @@ import { IErrorDetail } from "../../api/http-rest/api.dto";
 import {
   IAuthCredentials,
   ISignUpDTO,
-  IUpdateProfileDTO,
-  IUserDTO,
-  getMe,
+  emailValidityChecks,
   signIn,
   signUp,
-  updateProfile,
 } from "../../api/http-rest/auth";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
-export enum AuthQueryKeys {
-  USER = "user",
+export function useEmailValidityChecks() {
+  return useMutation({
+    mutationFn: emailValidityChecks,
+  });
 }
 
 export function useSignIn() {
@@ -23,24 +22,8 @@ export function useSignIn() {
 
 export function useSignOut() {
   return useMutation({
-    mutationFn: () => {
-      return Promise.resolve();
-    },
+    mutationFn: () => Promise.resolve(),
     throwOnError: true,
-  });
-}
-
-export function useMe() {
-  // get user cache
-  return useQuery<IUserDTO, IErrorDetail, IUserDTO>({
-    queryKey: [AuthQueryKeys.USER],
-    queryFn: getMe,
-  });
-}
-
-export function useUpdateProfile() {
-  return useMutation<void, IErrorDetail, IUpdateProfileDTO>({
-    mutationFn: updateProfile,
   });
 }
 
