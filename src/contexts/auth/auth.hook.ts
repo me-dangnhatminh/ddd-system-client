@@ -9,9 +9,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 
 export function useEmailValidityChecks() {
-  return useMutation({
-    mutationFn: emailValidityChecks,
-  });
+  return useMutation({ mutationFn: emailValidityChecks });
 }
 
 export function useSignIn() {
