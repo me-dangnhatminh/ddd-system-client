@@ -12,8 +12,20 @@ import {
 } from "@mui/joy";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import DoneIcon from "@mui/icons-material/Check";
-import { useEmailValidityChecks } from "../../contexts/auth/auth.hook";
-import { debounce } from "lodash";
+import {
+  useEmailValidityChecks,
+  usePassvalidityChecks,
+  useUsernameValidityChecks,
+  useSignUp,
+} from "../../contexts/auth/auth.hook";
+
+function IconMark({ isValid }: { isValid: boolean }) {
+  return isValid ? (
+    <DoneIcon fontSize="small" color="success" />
+  ) : (
+    <ArrowRightAltIcon fontSize="small" />
+  );
+}
 
 interface IUsedValue {
   value: string;
@@ -22,26 +34,71 @@ interface IUsedValue {
 
 function SignUpPage() {
   const {
-    mutate: emailMutate,
+    mutateDebounce: emailCheck,
     isSuccess: isEmailSuccess,
     isError: isEmailError,
     error: emailError,
   } = useEmailValidityChecks();
-
-  const checkEmail = useMemo(
-    () => debounce((email: string) => emailMutate(email), 700),
-    [emailMutate]
-  );
+  const {
+    mutateDebounce: passCheck,
+    isSuccess: isPassSuccess,
+    isError: isPassError,
+    error: passError,
+  } = usePassvalidityChecks();
+  const {
+    mutateDebounce: usernameCheck,
+    isSuccess: isUsernameSuccess,
+    isError: isUsernameError,
+    error: usernameError,
+  } = useUsernameValidityChecks();
+  const signUp = useSignUp();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [emailValue, setEmailValue] = useState<IUsedValue>({
     value: "",
     isValid: false,
   });
+  const [passValue, setPassValue] = useState<IUsedValue>({
+    value: "",
+    isValid: false,
+  });
+  const [usernameValue, setUsernameValue] = useState<IUsedValue>({
+    value: "",
+    isValid: false,
+  });
+  const canSubmit = useMemo(
+    () => emailValue.isValid && passValue.isValid && usernameValue.isValid,
+    [emailValue, passValue, usernameValue]
+  );
 
-  function handleEmailFocus() {
-    setErrorMsg(null);
-  }
+  const handleSubmit = () => {
+    if (!canSubmit || signUp.isPending) return;
+    signUp.mutate({
+      email: emailValue.value,
+      password: passValue.value,
+      username: usernameValue.value,
+    });
+  };
+
+  useEffect(() => {
+    if (isUsernameSuccess) {
+      setUsernameValue((prev) => ({ ...prev, isValid: true }));
+      setErrorMsg(null);
+    } else if (isUsernameError) {
+      setUsernameValue((prev) => ({ ...prev, isValid: false }));
+      setErrorMsg(usernameError.message);
+    }
+  }, [isUsernameSuccess, isUsernameError, usernameError]);
+
+  useEffect(() => {
+    if (isPassSuccess) {
+      setPassValue((prev) => ({ ...prev, isValid: true }));
+      setErrorMsg(null);
+    } else if (isPassError) {
+      setPassValue((prev) => ({ ...prev, isValid: false }));
+      setErrorMsg(passError.message);
+    }
+  }, [isPassSuccess, isPassError, passError]);
 
   useEffect(() => {
     if (isEmailSuccess) {
@@ -58,19 +115,17 @@ function SignUpPage() {
       <Card>
         <Typography level="body-sm">Welcom to App</Typography>
         <Typography level="body-sm">Let’s begin the adventure</Typography>
-        <Typography level="title-md" fontWeight={700}>
-          Enter your email
-        </Typography>
+
         <FormControl>
+          <Typography level="title-md" fontWeight={700} mb={1}>
+            Enter your email
+          </Typography>
           <Stack direction="row" alignItems="center" spacing={1}>
             <Box>
-              <FormLabel sx={{ m: 0 }}>
-                {emailValue.isValid ? (
-                  <DoneIcon fontSize="small" />
-                ) : (
-                  <ArrowRightAltIcon fontSize="small" />
-                )}
-              </FormLabel>
+              <FormLabel
+                sx={{ m: 0 }}
+                children={<IconMark isValid={emailValue.isValid} />}
+              />
             </Box>
             <Input
               required
@@ -80,18 +135,89 @@ function SignUpPage() {
               fullWidth
               value={emailValue.value}
               onChange={(e) => {
-                const value = e.target.value; // email
+                const value = e.target.value;
                 setEmailValue({ ...emailValue, value });
-                checkEmail(value);
+                emailCheck(value);
               }}
-              onFocus={handleEmailFocus}
+              onFocus={() => setErrorMsg(null)}
               color={
-                errorMsg ? "danger" : emailValue.isValid ? "success" : undefined
+                emailValue.isValid ? "success" : errorMsg ? "danger" : undefined
+              }
+            />
+          </Stack>
+        </FormControl>
+
+        <FormControl sx={{ display: emailValue.isValid ? undefined : "none" }}>
+          <Typography level="title-md" fontWeight={700} mb={1}>
+            Create password
+          </Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Box>
+              <FormLabel
+                sx={{ m: 0 }}
+                children={<IconMark isValid={passValue.isValid} />}
+              />
+            </Box>
+            <Input
+              required
+              size="sm"
+              variant="plain"
+              type="password"
+              fullWidth
+              value={passValue.value}
+              onChange={(e) => {
+                const value = e.target.value;
+                setPassValue({ ...passValue, value });
+                passCheck(value);
+              }}
+              onFocus={() => setErrorMsg(null)}
+              color={
+                passValue.isValid ? "success" : errorMsg ? "danger" : undefined
+              }
+            />
+          </Stack>
+        </FormControl>
+
+        <FormControl
+          sx={{
+            display:
+              passValue.isValid && emailValue.isValid ? undefined : "none",
+          }}
+        >
+          <Typography level="title-md" fontWeight={700} mb={1}>
+            Enter a username
+          </Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Box>
+              <FormLabel
+                sx={{ m: 0 }}
+                children={<IconMark isValid={usernameValue.isValid} />}
+              />
+            </Box>
+            <Input
+              required
+              size="sm"
+              variant="plain"
+              fullWidth
+              value={usernameValue.value}
+              onChange={(e) => {
+                const value = e.target.value;
+                setUsernameValue({ ...usernameValue, value });
+                usernameCheck(value);
+              }}
+              onFocus={() => setErrorMsg(null)}
+              color={
+                usernameValue.isValid
+                  ? "success"
+                  : errorMsg
+                  ? "danger"
+                  : undefined
               }
             />
             <Button
-              sx={{ visibility: !emailValue.isValid ? "hidden" : undefined }}
-              disabled={!emailValue.isValid}
+              sx={{ display: canSubmit ? undefined : "none" }}
+              disabled={!canSubmit}
+              onClick={handleSubmit}
               size="sm"
               variant="outlined"
               color="neutral"
@@ -99,8 +225,6 @@ function SignUpPage() {
             />
           </Stack>
         </FormControl>
-
-        <FormControl>Hello</FormControl>
       </Card>
       <Card
         variant="plain"

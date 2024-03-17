@@ -1,10 +1,9 @@
 import { z } from "zod";
 
 export const SignUpDTOSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Emai must be include @. ex: demo@email.com "),
   password: z.string(),
+  username: z.string(),
 });
 
 export const AuthCredentialsSchema = z.object({

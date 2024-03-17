@@ -5,6 +5,7 @@ enum RoutesPath {
   HOME = "/",
   SIGN_IN = "/signin",
   SIGN_UP = "/signup",
+  VERIFY_EMAIL = "/verify-email",
   PROFILE = "/profile",
 }
 
@@ -20,6 +21,10 @@ const routes: RouteObject[] = [
   {
     path: RoutesPath.SIGN_UP,
     Component: lazy(() => import("../pages/SignUpPage")),
+  },
+  {
+    path: RoutesPath.VERIFY_EMAIL,
+    Component: lazy(() => import("../pages/VerifyEmailPage")),
   },
   {
     path: RoutesPath.PROFILE,

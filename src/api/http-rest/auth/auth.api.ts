@@ -2,11 +2,15 @@ import Api from "../api";
 import { IAuthCredentials, ISignUpDTO } from "./auth.dto";
 
 export function emailValidityChecks(email: string) {
-  return Api.post("auth/email-validity-checks", { value: email });
+  return Api.post("auth/email-validity-checks", { email });
 }
 
 export function passwordValidityChecks(password: string) {
-  return Api.post("auth/password-validity-checks", { value: password });
+  return Api.post("auth/password-validity-checks", { password });
+}
+
+export function usernameValidityChecks(username: string) {
+  return Api.post("auth/username-validity-checks", { username });
 }
 
 export function signIn(cres: IAuthCredentials): Promise<void> {
