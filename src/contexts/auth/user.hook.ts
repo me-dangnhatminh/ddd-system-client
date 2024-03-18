@@ -6,11 +6,22 @@ import {
   getMe,
   updateProfile,
 } from "../../api/http-rest/user";
+import { useNavigate } from "react-router-dom";
+
+export enum UserQueryKeys {
+  ME = "me",
+}
 
 export function useMe() {
+  const navigate = useNavigate();
+
   return useQuery<IUserDTO, IErrorDetail, IUserDTO>({
-    queryKey: ["user"],
-    queryFn: getMe,
+    queryKey: [UserQueryKeys.ME],
+    queryFn: async () => {
+      const response = await getMe();
+      if (!response.isVerified) navigate("/verify-email");
+      return response;
+    },
   });
 }
 

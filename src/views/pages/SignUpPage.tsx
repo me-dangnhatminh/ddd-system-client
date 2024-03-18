@@ -18,6 +18,8 @@ import {
   useUsernameValidityChecks,
   useSignUp,
 } from "../../contexts/auth/auth.hook";
+import { useMe } from "../../contexts/auth/user.hook";
+import { useNavigate } from "react-router-dom";
 
 function IconMark({ isValid }: { isValid: boolean }) {
   return isValid ? (
@@ -33,6 +35,12 @@ interface IUsedValue {
 }
 
 function SignUpPage() {
+  const getMe = useMe();
+  const navigate = useNavigate();
+
+  if (getMe.isSuccess)
+    getMe.data.isVerified ? navigate("/") : navigate("/verify-email");
+
   const {
     mutateDebounce: emailCheck,
     isSuccess: isEmailSuccess,

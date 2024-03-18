@@ -13,20 +13,26 @@ import {
 import GroupsIcon from "@mui/icons-material/Groups";
 
 type UserProps = {
-  firstName: string;
-  lastName: string;
+  name: string;
+  username: string;
   email: string;
   avatarUrl: string;
+};
+
+export type MenuItemProps = {
+  label: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 };
 
 type HeaderProps = {
   isLoggedIn: boolean;
   userInfo?: UserProps;
   isShowMenu: boolean;
+  menu?: MenuItemProps[];
   onBtnSignInClick: React.MouseEventHandler<HTMLAnchorElement>;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-function Header({ isLoggedIn, userInfo, onBtnSignInClick }: HeaderProps) {
+function Header({ isLoggedIn, userInfo, onBtnSignInClick, menu }: HeaderProps) {
   return (
     <Box
       mx="auto"
@@ -85,15 +91,22 @@ function Header({ isLoggedIn, userInfo, onBtnSignInClick }: HeaderProps) {
               />
               <Box sx={{ minWidth: 0, flex: 1 }}>
                 <Typography level="title-sm">
-                  {`${userInfo?.firstName} ${userInfo?.lastName}`.trim()}
+                  {`${userInfo?.username}`.trim()}
                 </Typography>
                 <Typography level="body-xs">{userInfo?.email}</Typography>
               </Box>
             </MenuButton>
-            <Menu>
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Logout</MenuItem>
-            </Menu>
+            {menu && menu.length > 0 && (
+              <Menu>
+                {menu.map((item, index) => (
+                  <MenuItem
+                    key={index}
+                    onClick={item.onClick}
+                    children={item.label}
+                  />
+                ))}
+              </Menu>
+            )}
           </Dropdown>
         )}
       </Box>

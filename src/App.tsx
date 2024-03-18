@@ -6,7 +6,14 @@ import { rootRouter } from "./views/routes/root";
 import FullLoading from "./views/components/FullLoading";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    },
+  },
 });
 
 function App() {

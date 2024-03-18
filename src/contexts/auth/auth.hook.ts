@@ -1,16 +1,18 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { debounce } from "lodash";
 
-import { IErrorDetail } from "../../api/http-rest/api.dto";
 import {
-  ISignUpDTO,
   emailValidityChecks,
   passwordValidityChecks,
   signUp,
   signIn,
   usernameValidityChecks,
+  requestVerifyEmail,
+  verifyEmailCode,
+  signOut,
 } from "../../api/http-rest/auth";
 import { useCallback } from "react";
+import { UserQueryKeys } from "./user.hook";
 
 const REQUEST_DB = 700;
 
@@ -36,19 +38,39 @@ export function useUsernameValidityChecks() {
   return { mutate, ...rest, mutateDebounce };
 }
 
+export function useSignUp() {
+  return useMutation({ mutationFn: signUp });
+}
+
 export function useSignIn() {
-  return useMutation({ mutationFn: signIn, throwOnError: true });
+  return useMutation({ mutationFn: signIn });
 }
 
 export function useSignOut() {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => Promise.resolve(),
+    mutationFn: signOut,
     throwOnError: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [UserQueryKeys.ME] });
+    },
   });
 }
 
-export function useSignUp() {
-  return useMutation<void, IErrorDetail, ISignUpDTO>({
-    mutationFn: signUp,
+export function useRequestVerifyEmail() {
+  return useMutation({
+    mutationFn: requestVerifyEmail,
+    throwOnError: true,
+  });
+}
+//
+export function useVerifyEmailCode() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: verifyEmailCode,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [UserQueryKeys.ME] });
+    },
   });
 }
