@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { IErrorDetail } from "../../api/http-rest/api.dto";
 import { IUserDTO, getMe, updateProfile } from "../../api/http-rest/user";
 
@@ -7,7 +7,7 @@ export enum UserQueryKeys {
 }
 
 export function useMe() {
-  return useQuery<IUserDTO, IErrorDetail, IUserDTO>({
+  return useSuspenseQuery<IUserDTO, IErrorDetail, IUserDTO>({
     queryKey: [UserQueryKeys.ME],
     queryFn: getMe,
   });

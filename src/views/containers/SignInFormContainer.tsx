@@ -32,7 +32,7 @@ function SignInFormContainer() {
     const error = signIn.error;
     if (isValidationError(error))
       setError({ invalidParams: invalidParamsToCredentials(error) });
-    else setError({ responseError: error.detail });
+    else setError({ responseError: error.message });
   }, [signIn.error, signIn.isError]);
 
   if (signIn.isSuccess) return <Navigate to="/" />;

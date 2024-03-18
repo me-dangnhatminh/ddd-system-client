@@ -5,7 +5,8 @@ import axios, {
 } from "axios";
 import {
   apiRequestInterceptor,
-  apiResponseInterceptor,
+  apiResponseErrorInterceptor,
+  apiResponseSuccessInterceptor,
 } from "./api.interceptor";
 
 const REQUEST_TIMEOUT_MS = 30000;
@@ -21,7 +22,10 @@ const apiRequestConfig: CreateAxiosDefaults<unknown> = {
 export const axiosInstance: AxiosInstance = axios.create(apiRequestConfig);
 
 axiosInstance.interceptors.request.use(apiRequestInterceptor);
-axiosInstance.interceptors.response.use(apiResponseInterceptor);
+axiosInstance.interceptors.response.use(
+  apiResponseSuccessInterceptor,
+  apiResponseErrorInterceptor
+);
 
 class Api {
   static get<T>(

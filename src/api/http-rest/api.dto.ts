@@ -3,6 +3,7 @@ import { z } from "zod";
 const ErrorDetailSchema = z.object({
   type: z.string(),
   title: z.string(),
+  status: z.number(),
   detail: z.string(),
 });
 
@@ -14,6 +15,7 @@ const InvalidParamSchema = z.object({
 const ValidationErrorSchema = z.object({
   type: z.string(),
   title: z.string(),
+  status: z.number(),
   detail: z.string(),
   errors: z.array(InvalidParamSchema),
 });
@@ -32,35 +34,49 @@ export const isValidationError = (
   return ValidationErrorSchema.safeParse(error).success;
 };
 
-export class ApiError extends Error implements IErrorDetail {
-  constructor(
-    public readonly type: string,
-    public readonly title: string,
-    public readonly detail: string
-  ) {
-    super(detail);
+export class ApiError<T extends IErrorDetail = IErrorDetail> extends Error {
+  constructor(public readonly error: T) {
+    super(error.detail);
+  }
+
+  static isApiError(error: unknown): error is IErrorDetail {
+    return isErrorDetail(error);
+  }
+
+  static new<T extends IErrorDetail = IErrorDetail>(error: T): ApiError<T> {
+    return new ApiError(error);
+  }
+
+  static fromError(error: IErrorDetail): ApiError {
+    return new ApiError(error);
+  }
+
+  static networkError(
+    type = "about:blank",
+    title = "Network error occurred.",
+    status = 0,
+    detail = "A network error occurred."
+  ): ApiError {
+    return new ApiError({ type, title, status, detail });
   }
 
   static unknown(
     type = "about:blank",
     title = "An unknown error occurred.",
+    status = 500,
     detail = "An unknown error occurred."
   ): ApiError {
-    return new ApiError(type, title, detail);
+    return new ApiError({ type, title, status, detail });
   }
 
-  static fromError(detail: IErrorDetail) {
-    return new ApiError(detail.type, detail.title, detail.detail);
-  }
-}
-
-export class ApiValidationError extends ApiError {
-  constructor(
-    public readonly type: string,
-    public readonly title: string,
-    public readonly detail: string,
-    public readonly errors: Array<{ name: string; reason: string }>
-  ) {
-    super(type, title, detail);
+  static formatError(
+    error: IErrorDetail = {
+      type: "about:blank",
+      title: "An unknown error occurred.",
+      status: 500,
+      detail: "An unknown error occurred.",
+    }
+  ): ApiError {
+    return new ApiError(error);
   }
 }

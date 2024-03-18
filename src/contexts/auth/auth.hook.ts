@@ -51,10 +51,12 @@ export function useSignUp() {
 export function useSignIn() {
   const queryClient = useQueryClient();
   return useMutation({
+    mutationKey: ["signIn"],
     mutationFn: signIn,
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: [UserQueryKeys.ME] });
     },
+    onError() {},
   });
 }
 

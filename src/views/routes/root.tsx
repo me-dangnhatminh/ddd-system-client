@@ -51,4 +51,4 @@ function getRoutes() {
   return [...routes, ...errorRoutes];
 }
 
-export const rootRouter = createBrowserRouter(getRoutes());
+export const rootRouter = createBrowserRouter([{ children: getRoutes() }]);
