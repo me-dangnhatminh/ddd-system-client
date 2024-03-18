@@ -40,9 +40,7 @@ function VerifyEmailPage() {
     setVerifyError(null);
   };
 
-  const handleChangeEmail = () => {
-    navigate("/profile");
-  };
+  const handleChangeEmail = () => navigate("/profile");
 
   const handleCodeChange = (value: string) => {
     const isValid = value.length === 6 && !isNaN(Number(value));

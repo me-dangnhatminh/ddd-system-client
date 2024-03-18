@@ -7,6 +7,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Link,
   Stack,
   Typography,
 } from "@mui/joy";
@@ -18,7 +19,6 @@ import {
   useUsernameValidityChecks,
   useSignUp,
 } from "../../contexts/auth/auth.hook";
-import { useMe } from "../../contexts/auth/user.hook";
 import { useNavigate } from "react-router-dom";
 
 function IconMark({ isValid }: { isValid: boolean }) {
@@ -35,11 +35,7 @@ interface IUsedValue {
 }
 
 function SignUpPage() {
-  const getMe = useMe();
   const navigate = useNavigate();
-
-  if (getMe.isSuccess)
-    getMe.data.isVerified ? navigate("/") : navigate("/verify-email");
 
   const {
     mutateDebounce: emailCheck,
@@ -118,8 +114,18 @@ function SignUpPage() {
     }
   }, [isEmailSuccess, isEmailError, emailError]);
 
+  if (signUp.isSuccess) navigate("/verify-email");
+
   return (
     <Container maxWidth="sm">
+      <Card variant="plain" sx={{ bgcolor: "transparent" }}>
+        <Typography level="body-sm">
+          Already have an account?{" "}
+          <Link color="primary" onClick={() => navigate("/signin")}>
+            Sign in
+          </Link>
+        </Typography>
+      </Card>
       <Card>
         <Typography level="body-sm">Welcom to App</Typography>
         <Typography level="body-sm">Let’s begin the adventure</Typography>

@@ -39,11 +39,23 @@ export function useUsernameValidityChecks() {
 }
 
 export function useSignUp() {
-  return useMutation({ mutationFn: signUp });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: signUp,
+    onSuccess: () => {
+      queryClient.fetchQuery({ queryKey: [UserQueryKeys.ME] });
+    },
+  });
 }
 
 export function useSignIn() {
-  return useMutation({ mutationFn: signIn });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: signIn,
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: [UserQueryKeys.ME] });
+    },
+  });
 }
 
 export function useSignOut() {
@@ -52,7 +64,7 @@ export function useSignOut() {
     mutationFn: signOut,
     throwOnError: true,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [UserQueryKeys.ME] });
+      queryClient.refetchQueries({ queryKey: [UserQueryKeys.ME] });
     },
   });
 }
