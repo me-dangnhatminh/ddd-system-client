@@ -28,8 +28,8 @@ function VerifyEmailPage() {
 
   const [verifyError, setVerifyError] = useState<string | null>(null);
 
-  if (getMe.isError) throw getMe.error;
-  if (reqVerify.isError) throw reqVerify.error;
+  // if (getMe.isError) throw getMe.error;
+  // if (reqVerify.isError) throw reqVerify.error;
 
   const handleResend = () => {
     if (reqVerify.isPending) return;

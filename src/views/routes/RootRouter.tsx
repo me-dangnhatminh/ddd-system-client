@@ -1,34 +1,43 @@
 import { lazy } from "react";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
+import { RouterErrorBoundary } from "./RouterErrorBoundary";
 
-enum RoutesPath {
-  HOME = "/",
-  SIGN_IN = "/signin",
-  SIGN_UP = "/signup",
-  VERIFY_EMAIL = "/verify-email",
-  PROFILE = "/profile",
+export enum RoutesPath {
+  Home = "/",
+  SignIn = "/signin",
+  SignUp = "/signup",
+  VerifyEmail = "/verify-email",
+  Profile = "/profile",
+  UserDetail = "/user/:id",
+  NotFound = "/404",
+  ServerError = "/500",
 }
 
 const routes: RouteObject[] = [
   {
-    path: RoutesPath.HOME,
+    path: RoutesPath.Home,
     Component: lazy(() => import("../pages/HomePage")),
+    hasErrorBoundary: true,
   },
   {
-    path: RoutesPath.SIGN_IN,
+    path: RoutesPath.SignIn,
     Component: lazy(() => import("../pages/SignInPage")),
+    hasErrorBoundary: true,
   },
   {
-    path: RoutesPath.SIGN_UP,
+    path: RoutesPath.SignUp,
     Component: lazy(() => import("../pages/SignUpPage")),
+    hasErrorBoundary: true,
   },
   {
-    path: RoutesPath.VERIFY_EMAIL,
+    path: RoutesPath.VerifyEmail,
     Component: lazy(() => import("../pages/VerifyEmailPage")),
+    hasErrorBoundary: true,
   },
   {
-    path: RoutesPath.PROFILE,
+    path: RoutesPath.Profile,
     Component: lazy(() => import("../pages/ProfilePage")),
+    hasErrorBoundary: true,
   },
 ];
 
@@ -51,4 +60,6 @@ function getRoutes() {
   return [...routes, ...errorRoutes];
 }
 
-export const rootRouter = createBrowserRouter([{ children: getRoutes() }]);
+export const RootRouter = createBrowserRouter([
+  { children: getRoutes(), ErrorBoundary: RouterErrorBoundary },
+]);

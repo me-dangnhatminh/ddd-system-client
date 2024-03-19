@@ -69,7 +69,7 @@ export class ApiError<T extends IErrorDetail = IErrorDetail> extends Error {
     return new ApiError({ type, title, status, detail });
   }
 
-  static formatError(
+  static formatDetail(
     error: IErrorDetail = {
       type: "about:blank",
       title: "An unknown error occurred.",

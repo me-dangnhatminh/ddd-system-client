@@ -2,14 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { debounce } from "lodash";
 
 import {
-  emailValidityChecks,
-  passwordValidityChecks,
   signUp,
   signIn,
+  signOut,
+  emailValidityChecks,
+  passwordValidityChecks,
   usernameValidityChecks,
   requestVerifyEmail,
   verifyEmailCode,
-  signOut,
 } from "../../api/http-rest/auth";
 import { useCallback } from "react";
 import { UserQueryKeys } from "./user.hook";
@@ -51,7 +51,6 @@ export function useSignUp() {
 export function useSignIn() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["signIn"],
     mutationFn: signIn,
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: [UserQueryKeys.ME] });

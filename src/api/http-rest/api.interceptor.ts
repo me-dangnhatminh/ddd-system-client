@@ -28,7 +28,7 @@ export const apiResponseErrorInterceptor = (error: AxiosError) => {
   const contentType = response.headers["content-type"] ?? "";
   if (contentType.includes(PROBLEM_DETAILS_CONTENT_TYPE)) {
     const problemDetails = response.data;
-    if (!ApiError.isApiError(problemDetails)) throw ApiError.formatError();
+    if (!ApiError.isApiError(problemDetails)) throw ApiError.formatDetail();
     throw ApiError.fromError(problemDetails);
   }
 
