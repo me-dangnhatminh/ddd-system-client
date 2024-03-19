@@ -1,27 +1,28 @@
 import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
-import { useSignIn } from "../../contexts/auth/auth.hook";
+import { useAuth } from "../../hooks/auth.hook";
 import SignInForm, { SignInCredentials } from "../components/SignInForm";
 import SignInThirtySeviceContainer from "./SignInThirtySeviceContainer";
 import { isValidationError } from "../../api/http-rest/api.dto";
 import { invalidParamsToCredentials } from "../../api/http-rest/auth";
 
 function SignInFormContainer() {
-  const signIn = useSignIn();
+  const auth = useAuth();
+  if (auth.isSignedIn) throw new Error("Already signed in"); // TODO: dont use throw
+
+  const signIn = auth.signIn;
   const [error, setError] = useState<{
     responseError?: string;
     invalidParams?: { email?: string; password?: string };
   }>();
 
-  function handleInputFocus() {
-    setError(undefined);
-  }
+  const handleInputFocus = () => setError(undefined);
 
-  function handleSubmit(cres: SignInCredentials) {
+  const handleSubmit = (cres: SignInCredentials) => {
     if (signIn.isPending) return;
     signIn.mutate(cres);
-  }
+  };
 
   useEffect(() => {
     if (signIn.isPending) setError(undefined);

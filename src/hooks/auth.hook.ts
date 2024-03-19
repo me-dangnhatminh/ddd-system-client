@@ -4,15 +4,15 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import * as AuthApi from "../api/http-rest/auth";
-import { IUserDTO, getMe } from "../api/http-rest/user";
 import { debounce } from "lodash";
 import { useCallback } from "react";
+import * as AuthApi from "../api/http-rest/auth";
+import * as UserApi from "../api/http-rest/user";
 
 const REQUEST_DB = 700;
 
 // Validity checks hooks
-export function useEmailValidityChecks() {
+function useEmailValidityChecks() {
   const { mutate, ...rest } = useMutation({
     mutationFn: AuthApi.emailValidityChecks,
   });
@@ -20,7 +20,7 @@ export function useEmailValidityChecks() {
   return { mutate, ...rest, mutateDebounce };
 }
 
-export function usePassvalidityChecks() {
+function usePassvalidityChecks() {
   const { mutate, ...rest } = useMutation({
     mutationFn: AuthApi.passwordValidityChecks,
   });
@@ -28,7 +28,7 @@ export function usePassvalidityChecks() {
   return { mutate, ...rest, mutateDebounce };
 }
 
-export function useUsernameValidityChecks() {
+function useUsernameValidityChecks() {
   const { mutate, ...rest } = useMutation({
     mutationFn: AuthApi.usernameValidityChecks,
   });
@@ -45,7 +45,7 @@ type PasswordValidityChecksType = ReturnType<typeof usePassvalidityChecks>;
 type UsernameValidityChecksType = ReturnType<typeof useUsernameValidityChecks>;
 
 type ISignedState = {
-  userInfo: IUserDTO;
+  userInfo: UserApi.IUserDTO;
   isSignedIn: true;
   emailChecks?: never;
   passwordChecks?: never;
@@ -68,7 +68,10 @@ export type AuthState = ISignedState | IUnsignedState;
 
 export function useAuth(): AuthState {
   const queryClient = useQueryClient();
-  const { data: userInfo } = useQuery({ queryKey: ["me"], queryFn: getMe });
+  const { data: userInfo } = useQuery({
+    queryKey: ["me"],
+    queryFn: UserApi.getMe,
+  });
 
   const emailCheck = useEmailValidityChecks();
   const passwordCheck = usePassvalidityChecks();

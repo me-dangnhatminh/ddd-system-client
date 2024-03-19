@@ -1,21 +1,20 @@
 import Header, { MenuItemProps } from "../components/Header";
 import { useNavigate } from "react-router-dom";
-import { useMe } from "../../contexts/auth/user.hook";
-import { useSignOut } from "../../contexts/auth/auth.hook";
+import { useAuth } from "../../hooks/auth.hook";
 
 function HeaderContainer() {
-  const { data: user, isSuccess } = useMe();
-  const signOut = useSignOut();
+  const auth = useAuth();
+  const user = auth.userInfo;
 
   const menuProps: MenuItemProps[] = [
-    { label: "Sign Out", onClick: () => signOut.mutate() },
+    { label: "Sign Out", onClick: () => auth.signOut?.mutate() },
   ];
 
   const navigate = useNavigate();
 
   return (
     <Header
-      isLoggedIn={isSuccess}
+      isLoggedIn={auth.isSignedIn}
       userInfo={user}
       menu={menuProps}
       isShowMenu={false}
