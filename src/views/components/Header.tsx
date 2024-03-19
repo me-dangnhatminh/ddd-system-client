@@ -69,7 +69,7 @@ function Header({ isLoggedIn, userInfo, onBtnSignInClick, menu }: HeaderProps) {
 
       <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
         {!isLoggedIn ? (
-          <Button variant="outlined" onClick={onBtnSignInClick}>
+          <Button variant="outlined" onClick={onBtnSignInClick} size="sm">
             Sign In
           </Button>
         ) : (
