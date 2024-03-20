@@ -1,18 +1,16 @@
 import {
   UseMutationResult,
   useMutation,
-  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { debounce } from "lodash";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import * as AuthApi from "../api/http-rest/auth";
-import * as UserApi from "../api/http-rest/user";
 
 const REQUEST_DB = 700;
 
 // Validity checks hooks
-function useEmailValidityChecks() {
+export function useEmailValidityChecks() {
   const { mutate, ...rest } = useMutation({
     mutationFn: AuthApi.emailValidityChecks,
   });
@@ -20,7 +18,7 @@ function useEmailValidityChecks() {
   return { mutate, ...rest, mutateDebounce };
 }
 
-function usePassvalidityChecks() {
+export function usePassvalidityChecks() {
   const { mutate, ...rest } = useMutation({
     mutationFn: AuthApi.passwordValidityChecks,
   });
@@ -28,7 +26,7 @@ function usePassvalidityChecks() {
   return { mutate, ...rest, mutateDebounce };
 }
 
-function useUsernameValidityChecks() {
+export function useUsernameValidityChecks() {
   const { mutate, ...rest } = useMutation({
     mutationFn: AuthApi.usernameValidityChecks,
   });
@@ -43,9 +41,14 @@ type SignOutType = UseMutationResult<void, Error, void>;
 type EmailValidityChecksType = ReturnType<typeof useEmailValidityChecks>;
 type PasswordValidityChecksType = ReturnType<typeof usePassvalidityChecks>;
 type UsernameValidityChecksType = ReturnType<typeof useUsernameValidityChecks>;
+type RequestVerifyEmailType = UseMutationResult<void, Error, { email: string }>;
+type VerifyEmailCodeType = UseMutationResult<
+  void,
+  Error,
+  { email: string; code: string }
+>;
 
 type ISignedState = {
-  userInfo: UserApi.IUserDTO;
   isSignedIn: true;
   emailChecks?: never;
   passwordChecks?: never;
@@ -53,9 +56,11 @@ type ISignedState = {
   signOut: SignOutType;
   signIn?: never;
   signUp?: never;
+  requestVerifyEmail: RequestVerifyEmailType;
+  verifyEmailCode: VerifyEmailCodeType;
 };
+
 interface IUnsignedState {
-  userInfo?: never;
   isSignedIn: false;
   emailCheck: EmailValidityChecksType;
   passwordCheck: PasswordValidityChecksType;
@@ -68,31 +73,64 @@ export type AuthState = ISignedState | IUnsignedState;
 
 export function useAuth(): AuthState {
   const queryClient = useQueryClient();
-  const { data: userInfo } = useQuery({
-    queryKey: ["me"],
-    queryFn: UserApi.getMe,
-  });
+  const [isSignedIn, setIsSignedIn] = useState(AuthApi.AuthToken.isSignedIn());
 
   const emailCheck = useEmailValidityChecks();
   const passwordCheck = usePassvalidityChecks();
-  const usernameCheck = useUsernameValidityChecks();
+  const usernameCheck = useUsernameValidityChecks() ;
 
-  const signIn = useMutation({ mutationFn: AuthApi.signIn });
-  const signUp = useMutation({ mutationFn: AuthApi.signUp });
-  const signOut = useMutation({
-    mutationFn: AuthApi.signOut,
-    onSuccess: () => queryClient.removeQueries({ queryKey: ["me"] }),
+  const signIn = useMutation({
+    mutationFn: async (cres: AuthApi.IAuthCredentials) => {
+      await AuthApi.signIn(cres);
+      await AuthApi.AuthToken.save("token");
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      await setIsSignedIn(true);
+    },
+    onError: (error) => {
+      alert(error.message);
+    },
   });
 
-  // --- Return
-  if (userInfo) return { userInfo, isSignedIn: true, signOut };
-  else
+  const signUp = useMutation({
+    mutationFn: async (dto: AuthApi.ISignUpDTO) => {
+      await AuthApi.signUp(dto);
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      await AuthApi.AuthToken.save("token");
+      await setIsSignedIn(true);
+    },
+  });
+
+  const signOut = useMutation({
+    mutationKey: ["signOut"],
+    mutationFn: async () => {
+      await AuthApi.signOut();
+      await queryClient.setQueryData(["me"], undefined);
+      AuthApi.AuthToken.remove();
+      await setIsSignedIn(false);
+    },
+  });
+  const requestVerifyEmail = useMutation({
+    mutationFn: AuthApi.requestVerifyEmail,
+  });
+  const verifyEmailCode = useMutation({
+    mutationFn: AuthApi.verifyEmailCode,
+  });
+
+  if (isSignedIn) {
+    return {
+      isSignedIn,
+      signOut,
+      requestVerifyEmail,
+      verifyEmailCode,
+    };
+  } else {
     return {
       isSignedIn: false,
-      signIn,
-      signUp,
       emailCheck,
       passwordCheck,
       usernameCheck,
+      signIn,
+      signUp,
     };
+  }
 }

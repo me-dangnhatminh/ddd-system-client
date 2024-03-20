@@ -1,12 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useEffect, useRef, useState } from "react";
 import { Container, Card, Typography, Link, Box, Button } from "@mui/joy";
 import DigitInput, { DigitInputElement } from "../containers/singup/DigitInput";
-import { useMe } from "../../contexts/auth/user.hook";
 import { useNavigate } from "react-router-dom";
-import {
-  useRequestVerifyEmail,
-  useVerifyEmailCode,
-} from "../../contexts/auth/auth.hook";
+import { useAuth } from "../../hooks";
 
 interface CodeValueProps {
   value: string;
@@ -14,9 +11,11 @@ interface CodeValueProps {
 }
 
 function VerifyEmailPage() {
-  const getMe = useMe();
-  const reqVerify = useRequestVerifyEmail();
-  const verifyCode = useVerifyEmailCode();
+  const auth = useAuth();
+  if (!auth.isSignedIn) throw new Error("You are not signed in");
+
+  const reqVerify = auth.requestVerifyEmail;
+  const verifyCode = auth.verifyEmailCode;
   const navigate = useNavigate();
 
   const digitInput = useRef<DigitInputElement | null>(null);
@@ -32,10 +31,8 @@ function VerifyEmailPage() {
   // if (reqVerify.isError) throw reqVerify.error;
 
   const handleResend = () => {
-    if (reqVerify.isPending) return;
-    if (verifyCode.isPending) return;
-    if (!getMe.isSuccess) return;
-    reqVerify.mutate({ email: getMe.data.email });
+    if (!auth.userInfo) return;
+    reqVerify.mutate({ email: auth.userInfo.email });
     digitInput.current?.clearValues();
     setVerifyError(null);
   };
@@ -49,10 +46,8 @@ function VerifyEmailPage() {
   };
 
   const handleVerify = () => {
-    if (verifyCode.isPending) return;
-    if (!code.isValid) return;
-    if (!getMe.isSuccess) return;
-    verifyCode.mutate({ email: getMe.data.email, code: code.value });
+    if (verifyCode.isPending || !auth.userInfo || !code.isValid) return;
+    verifyCode.mutate({ email: auth.userInfo.email, code: code.value });
   };
 
   useEffect(() => {
@@ -62,8 +57,6 @@ function VerifyEmailPage() {
     }
   }, [verifyCode.isError, verifyCode.error]);
 
-  if (getMe.isPending) return <>loading...</>;
-  if (getMe.data.isVerified) navigate("/");
   if (verifyCode.isSuccess) navigate("/");
 
   return (
@@ -71,7 +64,11 @@ function VerifyEmailPage() {
       <Card>
         <Typography>You're almost done!</Typography>
         <Typography>
-          We sent a launch code to <b>{getMe.data.email}</b>.
+          We sent a launch code to{" "}
+          <b style={{ fontWeight: "bold" }}>
+            {auth.userInfo ? auth.userInfo.email : "your email"}
+          </b>
+          .
         </Typography>
         <Typography
           sx={{ display: verifyError ? undefined : "none" }}

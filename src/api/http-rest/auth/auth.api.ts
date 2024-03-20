@@ -1,6 +1,23 @@
 import Api from "../api";
 import { IAuthCredentials, ISignUpDTO } from "./auth.dto";
 
+export const AuthToken = Object.freeze({
+  isSignedIn: () => {
+    return !!localStorage.getItem("token");
+  },
+  get: () => {
+    const token = localStorage.getItem("token");
+    if (token) return token;
+    return null;
+  },
+  save: (token: string) => {
+    localStorage.setItem("token", token);
+  },
+  remove: () => {
+    localStorage.removeItem("token");
+  },
+});
+
 export function emailValidityChecks(email: string) {
   return Api.post("auth/email-validity-checks", { email });
 }
@@ -34,4 +51,16 @@ export function verifyEmailCode(dto: {
   code: string;
 }): Promise<void> {
   return Api.post("auth/email/confirmation/verify", dto).then();
+}
+
+export function requestResetPassword(dto: { email: string }): Promise<void> {
+  return Api.post("auth/password/reset/request", dto).then();
+}
+
+export function resetPassword(dto: {
+  token: string;
+  email: string;
+  newPassword: string;
+}): Promise<void> {
+  return Api.post("auth/password/reset/verify", dto).then();
 }
