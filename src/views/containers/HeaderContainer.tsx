@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../../hooks/user.hook";
 import Header, { MenuItemProps } from "../components/Header";
 import { IUserDTO } from "../../api/http-rest/user";
-import { useAuth } from "../../hooks";
+import { useSignOut, useUser } from "../../hooks";
 
 function HeaderNotSignedIn() {
   const navigate = useNavigate();
@@ -19,9 +18,9 @@ function HeaderNotSignedIn() {
 
 function HeaderSignedIn({ user }: { user: IUserDTO }) {
   const navigate = useNavigate();
-  const auth = useAuth();
+  const signOut = useSignOut();
   const menu: MenuItemProps[] = [
-    { label: "Sign Out", onClick: () => auth.signOut?.mutate() },
+    { label: "Sign Out", onClick: () => signOut.mutate() },
   ];
 
   return (
@@ -37,7 +36,6 @@ function HeaderSignedIn({ user }: { user: IUserDTO }) {
 
 function HeaderContainer() {
   const user = useUser();
-
   if (user.data) return <HeaderSignedIn user={user.data} />;
   return <HeaderNotSignedIn />;
 }

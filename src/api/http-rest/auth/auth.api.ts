@@ -19,15 +19,15 @@ export const AuthToken = Object.freeze({
 });
 
 export function emailValidityChecks(email: string) {
-  return Api.post("auth/email-validity-checks", { email });
+  return Api.post("auth/email/validity-checks", { email });
 }
 
 export function passwordValidityChecks(password: string) {
-  return Api.post("auth/password-validity-checks", { password });
+  return Api.post("auth/password/validity-checks", { password });
 }
 
 export function usernameValidityChecks(username: string) {
-  return Api.post("auth/username-validity-checks", { username });
+  return Api.post("auth/username/validity-checks", { username });
 }
 
 export function signUp(dto: ISignUpDTO): Promise<void> {

@@ -13,7 +13,12 @@ import {
 } from "@mui/joy";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import DoneIcon from "@mui/icons-material/Check";
-import { useAuth } from "../../hooks";
+import {
+  useEmailValidityChecks,
+  usePassvalidityChecks,
+  useSignUp,
+  useUsernameValidityChecks,
+} from "../../hooks";
 import { useNavigate } from "react-router-dom";
 
 function IconMark({ isValid }: { isValid: boolean }) {
@@ -31,29 +36,27 @@ interface IUsedValue {
 
 function SignUpPage() {
   const navigate = useNavigate();
-  const auth = useAuth();
-  if (auth.isSignedIn) throw new Error("You are already signed in");
 
   const {
     mutateDebounce: emailCheck,
     isSuccess: isEmailSuccess,
     isError: isEmailError,
     error: emailError,
-  } = auth.emailCheck;
+  } = useEmailValidityChecks();
   const {
     mutateDebounce: passCheck,
     isSuccess: isPassSuccess,
     isError: isPassError,
     error: passError,
-  } = auth.passwordCheck;
+  } = usePassvalidityChecks();
   const {
     mutateDebounce: usernameCheck,
     isSuccess: isUsernameSuccess,
     isError: isUsernameError,
     error: usernameError,
-  } = auth.usernameCheck;
+  } = useUsernameValidityChecks();
 
-  const signUp = auth.signUp;
+  const signUp = useSignUp();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [emailValue, setEmailValue] = useState<IUsedValue>({
@@ -111,8 +114,6 @@ function SignUpPage() {
       setErrorMsg(emailError.message);
     }
   }, [isEmailSuccess, isEmailError, emailError]);
-
-  if (signUp.isSuccess) navigate("/verify-email");
 
   return (
     <Container maxWidth="sm">

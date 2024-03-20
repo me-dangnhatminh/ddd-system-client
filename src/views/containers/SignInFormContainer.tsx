@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
 
+import { isValidationError } from "../../api/http-rest/api.dto";
+import { invalidParamsToCredentials } from "../../api/http-rest/auth";
+
+import { useSignIn } from "../../hooks";
 import SignInForm, { SignInCredentials } from "../components/SignInForm";
 import SignInThirtySeviceContainer from "./SignInThirtySeviceContainer";
-import { isValidationError } from "../../api/http-rest/api.dto";
-import * as AuthApi from "../../api/http-rest/auth";
-import { useMutation } from "@tanstack/react-query";
 
 function SignInFormContainer() {
-  const signIn = useMutation({ mutationFn: AuthApi.signIn });
+  const signIn = useSignIn();
 
   const [error, setError] = useState<{
     responseError?: string;
@@ -30,11 +30,10 @@ function SignInFormContainer() {
     if (!signIn.isError) return;
     const error = signIn.error;
     if (isValidationError(error))
-      setError({ invalidParams: AuthApi.invalidParamsToCredentials(error) });
+      setError({ invalidParams: invalidParamsToCredentials(error) });
     else setError({ responseError: error.message });
   }, [signIn.error, signIn.isError]);
 
-  if (signIn.isSuccess) return <Navigate to="/" />;
   return (
     <>
       <SignInForm

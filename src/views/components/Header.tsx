@@ -97,7 +97,7 @@ function Header({ isLoggedIn, userInfo, onBtnSignInClick, menu }: HeaderProps) {
               </Box>
             </MenuButton>
             {menu && menu.length > 0 && (
-              <Menu>
+              <Menu size="sm">
                 {menu.map((item, index) => (
                   <MenuItem
                     key={index}
