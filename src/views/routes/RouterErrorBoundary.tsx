@@ -1,6 +1,7 @@
 import { useNavigate, useRouteError } from "react-router-dom";
-import { ApiError } from "../../api/http-rest/api.dto";
 import { RoutesPath } from "./RootRouter";
+
+import { ApiError } from "../../api/http-rest/api.dto";
 
 const handleErrorMessages = (error: unknown) => {
   if (error instanceof ApiError) return error.error.detail;

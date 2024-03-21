@@ -2,20 +2,10 @@ import Api from "../api";
 import { IAuthCredentials, ISignUpDTO } from "./auth.dto";
 
 export const AuthToken = Object.freeze({
-  isSignedIn: () => {
-    return !!localStorage.getItem("token");
-  },
-  get: () => {
-    const token = localStorage.getItem("token");
-    if (token) return token;
-    return null;
-  },
-  save: (token: string) => {
-    localStorage.setItem("token", token);
-  },
-  remove: () => {
-    localStorage.removeItem("token");
-  },
+  isSignedIn: () => !!localStorage.getItem("authToken"),
+  get: () => localStorage.getItem("authToken"),
+  set: (token: string) => localStorage.setItem("authToken", token),
+  clear: () => localStorage.removeItem("authToken"),
 });
 
 export function emailValidityChecks(email: string) {

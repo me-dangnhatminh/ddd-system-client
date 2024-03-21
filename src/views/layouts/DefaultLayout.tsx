@@ -1,16 +1,19 @@
-import { Container } from "@mui/joy";
-import HeaderContainer from "../containers/HeaderContainer";
+import { Box, Container, Stack } from "@mui/joy";
 
 interface DefaultLayoutProps {
-  children: React.ReactNode;
+  header: React.ReactNode;
+  main: React.ReactNode;
+  footer: React.ReactNode;
 }
 
-function DefaultLayout({ children }: DefaultLayoutProps) {
+function DefaultLayout({ header, main, footer }: DefaultLayoutProps) {
   return (
     <Container maxWidth="lg">
-      <HeaderContainer />
-      <main>{children}</main>
-      <footer>Footer</footer>
+      <Stack direction="column">
+        <Box children={header} />
+        <Box children={main} />
+        <Box children={footer} />
+      </Stack>
     </Container>
   );
 }

@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { debounce } from "lodash";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  AuthToken,
   emailValidityChecks,
   passwordValidityChecks,
   requestVerifyEmail,
@@ -41,18 +42,39 @@ export function useUsernameValidityChecks() {
 
 export function useUser(isSignedIn: boolean = false) {
   return useQuery({
-    queryKey: ["user", isSignedIn],
+    queryKey: ["user"],
     queryFn: getMe,
     enabled: isSignedIn,
   });
+}
+
+export function useAuth() {
+  const [isSignedIn, setIsSigned] = useState(AuthToken.isSignedIn());
+  const user = useUser(isSignedIn);
+
+  useEffect(() => {
+    if (!isSignedIn) AuthToken.clear();
+  }, [isSignedIn]);
+
+  if (user.data && isSignedIn)
+    return {
+      user,
+      isSignedIn,
+    };
+  else
+    return {
+      isSignedIn,
+      user,
+    };
 }
 
 export function useSignIn() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: signIn,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["user"] });
+    onSuccess: () => {
+      AuthToken.set("token");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 }
@@ -62,7 +84,7 @@ export function useSignUp() {
   return useMutation({
     mutationFn: signUp,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["user"] });
+      await queryClient.removeQueries({ queryKey: ["user"] });
     },
   });
 }
@@ -73,6 +95,7 @@ export function useSignOut() {
     mutationFn: signOut,
     onSuccess: async () => {
       await queryClient.removeQueries({ queryKey: ["user"] });
+      AuthToken.clear();
     },
   });
 }

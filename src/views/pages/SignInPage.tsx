@@ -1,5 +1,8 @@
 import { Box, Container, Stack, Typography } from "@mui/joy";
 import SignInFormContainer from "../containers/SignInFormContainer";
+import { useAuth } from "../../hooks";
+import { Navigate } from "react-router-dom";
+import { RoutesPath } from "../routes/RootRouter";
 
 function Footer() {
   return (
@@ -13,6 +16,9 @@ function Footer() {
 }
 
 function SignInPage() {
+  const auth = useAuth();
+  if (auth.isSignedIn) return <Navigate to={RoutesPath.Home} />;
+  
   return (
     <Container maxWidth="xs">
       <Stack spacing={2} py={4}>

@@ -17,9 +17,10 @@ import {
   useEmailValidityChecks,
   usePassvalidityChecks,
   useSignUp,
+  useUser,
   useUsernameValidityChecks,
 } from "../../hooks";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 function IconMark({ isValid }: { isValid: boolean }) {
   return isValid ? (
@@ -33,44 +34,21 @@ interface IUsedValue {
   value: string;
   isValid: boolean;
 }
+// how to alway return a new object
+const initUsedValue = (): IUsedValue => ({ value: "", isValid: false });
 
 function SignUpPage() {
-  const navigate = useNavigate();
-
-  const {
-    mutateDebounce: emailCheck,
-    isSuccess: isEmailSuccess,
-    isError: isEmailError,
-    error: emailError,
-  } = useEmailValidityChecks();
-  const {
-    mutateDebounce: passCheck,
-    isSuccess: isPassSuccess,
-    isError: isPassError,
-    error: passError,
-  } = usePassvalidityChecks();
-  const {
-    mutateDebounce: usernameCheck,
-    isSuccess: isUsernameSuccess,
-    isError: isUsernameError,
-    error: usernameError,
-  } = useUsernameValidityChecks();
-
   const signUp = useSignUp();
+  const user = useUser(signUp.isSuccess);
+
+  const emailValidity = useEmailValidityChecks();
+  const passValidity = usePassvalidityChecks();
+  const usernameValidity = useUsernameValidityChecks();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [emailValue, setEmailValue] = useState<IUsedValue>({
-    value: "",
-    isValid: false,
-  });
-  const [passValue, setPassValue] = useState<IUsedValue>({
-    value: "",
-    isValid: false,
-  });
-  const [usernameValue, setUsernameValue] = useState<IUsedValue>({
-    value: "",
-    isValid: false,
-  });
+  const [emailValue, setEmailValue] = useState(initUsedValue());
+  const [passValue, setPassValue] = useState(initUsedValue());
+  const [usernameValue, setUsernameValue] = useState(initUsedValue());
   const canSubmit = useMemo(
     () => emailValue.isValid && passValue.isValid && usernameValue.isValid,
     [emailValue, passValue, usernameValue]
@@ -86,43 +64,43 @@ function SignUpPage() {
   };
 
   useEffect(() => {
-    if (isUsernameSuccess) {
+    if (usernameValidity.isSuccess) {
       setUsernameValue((prev) => ({ ...prev, isValid: true }));
       setErrorMsg(null);
-    } else if (isUsernameError) {
+    } else if (usernameValidity.error) {
       setUsernameValue((prev) => ({ ...prev, isValid: false }));
-      setErrorMsg(usernameError.message);
+      setErrorMsg(usernameValidity.error.message);
     }
-  }, [isUsernameSuccess, isUsernameError, usernameError]);
+  }, [usernameValidity.isSuccess, usernameValidity.error]);
 
   useEffect(() => {
-    if (isPassSuccess) {
-      setPassValue((prev) => ({ ...prev, isValid: true }));
-      setErrorMsg(null);
-    } else if (isPassError) {
-      setPassValue((prev) => ({ ...prev, isValid: false }));
-      setErrorMsg(passError.message);
-    }
-  }, [isPassSuccess, isPassError, passError]);
-
-  useEffect(() => {
-    if (isEmailSuccess) {
+    if (emailValidity.isSuccess) {
       setEmailValue((prev) => ({ ...prev, isValid: true }));
       setErrorMsg(null);
-    } else if (isEmailError) {
+    } else if (emailValidity.error) {
       setEmailValue((prev) => ({ ...prev, isValid: false }));
-      setErrorMsg(emailError.message);
+      setErrorMsg(emailValidity.error.message);
     }
-  }, [isEmailSuccess, isEmailError, emailError]);
+  }, [emailValidity.isSuccess, emailValidity.isError]);
+
+  useEffect(() => {
+    if (passValidity.isSuccess) {
+      setPassValue((prev) => ({ ...prev, isValid: true }));
+      setErrorMsg(null);
+    } else if (passValidity.error) {
+      setPassValue((prev) => ({ ...prev, isValid: false }));
+      setErrorMsg(passValidity.error.message);
+    }
+  }, [passValidity.isSuccess, passValidity.error]);
+
+  if (user.data) return <Navigate to="/" />;
 
   return (
     <Container maxWidth="sm">
       <Card variant="plain" sx={{ bgcolor: "transparent" }}>
         <Typography level="body-sm">
           Already have an account?{" "}
-          <Link color="primary" onClick={() => navigate("/signin")}>
-            Sign in
-          </Link>
+          <Link color="primary" href="/signin" children="Sign In" />
         </Typography>
       </Card>
       <Card>
@@ -150,7 +128,7 @@ function SignUpPage() {
               onChange={(e) => {
                 const value = e.target.value;
                 setEmailValue({ ...emailValue, value });
-                emailCheck(value);
+                emailValidity.mutateDebounce(value);
               }}
               onFocus={() => setErrorMsg(null)}
               color={
@@ -181,7 +159,7 @@ function SignUpPage() {
               onChange={(e) => {
                 const value = e.target.value;
                 setPassValue({ ...passValue, value });
-                passCheck(value);
+                passValidity.mutateDebounce(value);
               }}
               onFocus={() => setErrorMsg(null)}
               color={
@@ -216,7 +194,7 @@ function SignUpPage() {
               onChange={(e) => {
                 const value = e.target.value;
                 setUsernameValue({ ...usernameValue, value });
-                usernameCheck(value);
+                usernameValidity.mutateDebounce(value);
               }}
               onFocus={() => setErrorMsg(null)}
               color={

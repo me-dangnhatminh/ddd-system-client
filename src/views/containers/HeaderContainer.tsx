@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Header, { MenuItemProps } from "../components/Header";
 import { IUserDTO } from "../../api/http-rest/user";
 import { useSignOut, useUser } from "../../hooks";
+import { AuthToken } from "../../api/http-rest/auth";
 
 function HeaderNotSignedIn() {
   const navigate = useNavigate();
@@ -35,7 +36,9 @@ function HeaderSignedIn({ user }: { user: IUserDTO }) {
 }
 
 function HeaderContainer() {
-  const user = useUser();
+  const isSignedIn = AuthToken.isSignedIn();
+
+  const user = useUser(isSignedIn);
   if (user.data) return <HeaderSignedIn user={user.data} />;
   return <HeaderNotSignedIn />;
 }
